@@ -1,5 +1,6 @@
 from domain.cliente import Cliente
 from domain.produto import Produto
+from domain.pedido import Pedido
 from repositories.memory import db
 
 class LanchoneteService:
@@ -39,7 +40,31 @@ class LanchoneteService:
             return None
         db.pedidos_por_codigo[pedido.codigo] = pedido
         return pedido
-  
+
+    def cancelar_pedido(self, cod_pedido: int) -> bool:
+        pedido = self.pedido_repository.buscar_por_codigo(cod_pedido)
+
+        if pedido is None:
+            return False
+
+        cancelado = pedido.canelar_pedido()
+        return False
+
+
+def listar_pedidos_cancelados(self):
+    pedidos = self.pedido_repository.listar_todos()
+
+    pedidos_cancelados = []
+
+    for pedido in pedidos:
+
+        if pedido.esta_cancelado:
+            pedidos_cancelados.append(pedido)
+
+        if pedidos_cancelados:
+            return pedidos_cancelados
+
+    return []
 
 
 service = LanchoneteService()

@@ -11,6 +11,7 @@ class Pedido:
         self.qtd_max_produtos = int(qtd_max_produtos)
         self.listaProdutos: List[Produto] = []
         self.estaEntregue: bool = False
+        self.esta_cancelado: bool = False
  
     @property
     def codigo(self) -> int:
@@ -36,3 +37,11 @@ class Pedido:
         for p in self.listaProdutos:
             total += p.preco_final()
         return float(total)
+
+    def canelar_pedido(self) -> bool:
+        if self.estaEntregue:
+            return False
+        if self.esta_cancelado:
+            return False
+        self.esta_cancelado = True
+        return True

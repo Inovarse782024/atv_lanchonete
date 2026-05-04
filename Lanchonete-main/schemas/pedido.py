@@ -11,5 +11,6 @@ class PedidoAddItem(BaseModel):
 class PedidoOut(BaseModel):
     codigo: int
     cpf: str
+    esta_cancelado: bool
     esta_entregue: bool
     produtos: List[int]
