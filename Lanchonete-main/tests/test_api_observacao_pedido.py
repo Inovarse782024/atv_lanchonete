@@ -1,4 +1,4 @@
-async def test_deve_adicionar_observacao(client):
+def test_deve_adicionar_observacao(client):
     """Verifica o fluxo feliz de adição de observação.
 
     Cenário:
@@ -9,12 +9,12 @@ async def test_deve_adicionar_observacao(client):
         - Status HTTP 200
         - Corpo com ok=True e mensagem de confirmação
     """
-    await client.post("/clientes", json={"cpf": "12345678900", "nome": "Joao"})
-    await client.post("/produtos", json={"codigo": 1, "valor": 10.0, "tipo": 2})
-    r = await client.post("/lanchonete/pedidos", json={"cpf": "12345678900", "cod_produto": 1, "qtd_max_produtos": 5})
+    client.post("/clientes", json={"cpf": "12345678900", "nome": "Joao"})
+    client.post("/produtos", json={"codigo": 1, "valor": 10.0, "tipo": 2})
+    r = client.post("/lanchonete/pedidos", json={"cpf": "12345678900", "cod_produto": 1, "qtd_max_produtos": 5})
     cod_pedido = r.json()["codigo"]
 
-    response = await client.post(
+    response = client.post(
         f"/lanchonete/pedidos/{cod_pedido}/observacao",
         json={"observacao": "Sem cebola"},
     )
@@ -26,7 +26,7 @@ async def test_deve_adicionar_observacao(client):
     assert data["mensagem"] == "Observação adicionada com sucesso"
 
 
-async def test_nao_deve_aceitar_observacao_vazia(client):
+def test_nao_deve_aceitar_observacao_vazia(client):
     """Garante que uma observação vazia é rejeitada.
 
     Cenário:
@@ -39,12 +39,12 @@ async def test_nao_deve_aceitar_observacao_vazia(client):
         - Status HTTP 400
         - Mensagem de erro indicando pedido inválido
     """
-    await client.post("/clientes", json={"cpf": "12345678900", "nome": "Joao"})
-    await client.post("/produtos", json={"codigo": 1, "valor": 10.0, "tipo": 2})
-    r = await client.post("/lanchonete/pedidos", json={"cpf": "12345678900", "cod_produto": 1, "qtd_max_produtos": 5})
+    client.post("/clientes", json={"cpf": "12345678900", "nome": "Joao"})
+    client.post("/produtos", json={"codigo": 1, "valor": 10.0, "tipo": 2})
+    r = client.post("/lanchonete/pedidos", json={"cpf": "12345678900", "cod_produto": 1, "qtd_max_produtos": 5})
     cod_pedido = r.json()["codigo"]
 
-    response = await client.post(
+    response = client.post(
         f"/lanchonete/pedidos/{cod_pedido}/observacao",
         json={"observacao": ""},
     )
@@ -53,7 +53,7 @@ async def test_nao_deve_aceitar_observacao_vazia(client):
     assert response.json()["detail"] == "Pedido não encontrado ou inválido"
 
 
-async def test_nao_deve_adicionar_observacao_em_pedido_finalizado(client):
+def test_nao_deve_adicionar_observacao_em_pedido_finalizado(client):
     """Garante que pedido finalizado não aceita observação.
 
     Cenário:
@@ -67,13 +67,13 @@ async def test_nao_deve_adicionar_observacao_em_pedido_finalizado(client):
         - Status HTTP 400
         - Mensagem de erro indicando pedido inválido
     """
-    await client.post("/clientes", json={"cpf": "12345678900", "nome": "Joao"})
-    await client.post("/produtos", json={"codigo": 1, "valor": 10.0, "tipo": 2})
-    r = await client.post("/lanchonete/pedidos", json={"cpf": "12345678900", "cod_produto": 1, "qtd_max_produtos": 5})
+    client.post("/clientes", json={"cpf": "12345678900", "nome": "Joao"})
+    client.post("/produtos", json={"codigo": 1, "valor": 10.0, "tipo": 2})
+    r = client.post("/lanchonete/pedidos", json={"cpf": "12345678900", "cod_produto": 1, "qtd_max_produtos": 5})
     cod_pedido = r.json()["codigo"]
-    await client.post(f"/lanchonete/pedidos/{cod_pedido}/finalizar")
+    client.post(f"/lanchonete/pedidos/{cod_pedido}/finalizar")
 
-    response = await client.post(
+    response = client.post(
         f"/lanchonete/pedidos/{cod_pedido}/observacao",
         json={"observacao": "Sem molho"},
     )
@@ -82,7 +82,7 @@ async def test_nao_deve_adicionar_observacao_em_pedido_finalizado(client):
     assert response.json()["detail"] == "Pedido não encontrado ou inválido"
 
 
-async def test_deve_buscar_observacao_pedido(client):
+def test_deve_buscar_observacao_pedido(client):
     """Verifica que a observação registrada pode ser consultada.
 
     Cenário:
@@ -93,16 +93,16 @@ async def test_deve_buscar_observacao_pedido(client):
         - Status HTTP 200
         - Corpo com o código do pedido e o texto da observação registrada
     """
-    await client.post("/clientes", json={"cpf": "12345678900", "nome": "Joao"})
-    await client.post("/produtos", json={"codigo": 1, "valor": 10.0, "tipo": 2})
-    r = await client.post("/lanchonete/pedidos", json={"cpf": "12345678900", "cod_produto": 1, "qtd_max_produtos": 5})
+    client.post("/clientes", json={"cpf": "12345678900", "nome": "Joao"})
+    client.post("/produtos", json={"codigo": 1, "valor": 10.0, "tipo": 2})
+    r = client.post("/lanchonete/pedidos", json={"cpf": "12345678900", "cod_produto": 1, "qtd_max_produtos": 5})
     cod_pedido = r.json()["codigo"]
-    await client.post(
+    client.post(
         f"/lanchonete/pedidos/{cod_pedido}/observacao",
         json={"observacao": "Carne ao ponto"},
     )
 
-    response = await client.get(f"/lanchonete/pedidos/{cod_pedido}/observacao")
+    response = client.get(f"/lanchonete/pedidos/{cod_pedido}/observacao")
 
     assert response.status_code == 200
 
